@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}E'lonni tasdiqlash — Bozorix{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <span class="fs-1">📦</span>
+                    </div>
+                    <h3 class="fw-bold mb-2">E'loningiz qabul qilindi!</h3>
+                    <p class="text-muted">E'lon platformaga muvaffaqiyatli joylandi va moderator ko'rigidan o'tgach faollashadi.</p>
+
+                    <hr class="my-4">
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg rounded-3 fw-bold">
+                            🏠 Bosh sahifaga qaytish
+                        </a>
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary rounded-3">
+                            👤 Mening e'lonlarim
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Barcha Mahsulotlar — Bozorix{% endblock %}
+
+{% block content %}
+<style>
+    /* Eksklyuziv Neon & Dark Glassmorphism Tema */
+    :root {
+        --bg-main: #0f172a;
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --accent-neon: #6366f1;
+        --accent-glow: rgba(99, 102, 241, 0.35);
+        --accent-cyan: #06b6d4;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+    }
+
+    body {
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+    }
+
+    /* BURCHAKDA MUKAMMAL YOPISHIB TURUVCHI SIDEBAR (STICKY) */
+    .sticky-sidebar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+    }
+
+    /* Glassmorphism Panellar */
+    .glass-panel {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    /* Yon menyu va Linklar */
+    .category-link {
+        color: var(--text-secondary);
+        font-weight: 500;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 10px 14px;
+        border: 1px solid transparent;
+    }
+
+    .category-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: translateX(4px);
+    }
+
+    .category-link.active {
+        background: linear-gradient(135deg, var(--accent-neon), var(--accent-cyan));
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    /* Mahsulot Kartochkasi */
+    .product-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: translateY(-6px) scale(1.01);
+        border-color: var(--accent-neon);
+        box-shadow: 0 12px 28px var(--accent-glow);
+    }
+
+    .product-img-wrapper {
+        position: relative;
+        height: 210px;
+        background: #1e293b;
+        overflow: hidden;
+    }
+
+    .product-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-img-wrapper img {
+        transform: scale(1.06);
+    }
+
+    .badge-status {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        backdrop-filter: blur(8px);
+        background: rgba(15, 23, 42, 0.75);
+        color: var(--accent-cyan);
+        border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .btn-fav {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--card-border);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all 0.2s;
+    }
+
+    .btn-fav:hover {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+    }
+
+    .product-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.7em;
+        text-decoration: none;
+    }
+
+    .product-title:hover {
+        color: var(--accent-cyan);
+    }
+
+    .price-text {
+        font-size: 1.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff, var(--text-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .btn-glow {
+        background: linear-gradient(135deg, var(--accent-neon), var(--accent-cyan));
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-glow:hover {
+        box-shadow: 0 0 15px var(--accent-glow);
+        color: white;
+    }
+
+    /* Form Boshqaruv vositalari */
+    .form-select, .form-control {
+        background-color: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--card-border);
+        color: var(--text-primary);
+    }
+
+    .form-select:focus {
+        background-color: rgba(15, 23, 42, 0.8);
+        color: var(--text-primary);
+        border-color: var(--accent-neon);
+        box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* PAGINATION STYLE */
+    .custom-pagination .page-link {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-secondary);
+        margin: 0 4px;
+        border-radius: 10px !important;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        padding: 8px 16px;
+    }
+
+    .custom-pagination .page-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .custom-pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--accent-neon), var(--accent-cyan));
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .custom-pagination .page-item.disabled .page-link {
+        background: rgba(15, 23, 42, 0.4);
+        border-color: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.25);
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row g-4">
+        
+        <!-- YON BO'LIMLAR (BURCHAKDA YOPISHIB TURUVCHI STICKY SIDEBAR) -->
+        <div class="col-lg-3">
+            <div class="sticky-sidebar">
+                
+                <!-- Kategoriyalar Paneli -->
+                <div class="glass-panel p-3 mb-4">
+                    <div class="d-flex align-items-center mb-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; color: var(--accent-cyan);">
+                        <i class="bi bi-grid-3x3-gap-fill me-2 fs-6"></i>
+                        <span class="fw-bold">Kategoriyalar</span>
+                    </div>
+                    <div class="nav flex-column gap-1">
+                        <a href="{% url 'products:product_list' %}" class="category-link {% if not current_category %}active{% endif %}">
+                            <i class="bi bi-compass me-2"></i>Barcha e'lonlar
+                        </a>
+                        {% for cat in categories %}
+                            <a href="{{ cat.get_absolute_url }}" class="category-link {% if current_category.id == cat.id %}active{% endif %}">
+                                <i class="{{ cat.icon|default:'bi bi-folder2-open' }} me-2"></i>{{ cat.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Filtr Paneli -->
+                <div class="glass-panel p-3">
+                    <div class="d-flex align-items-center mb-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; color: var(--accent-cyan);">
+                        <i class="bi bi-sliders me-2 fs-6"></i>
+                        <span class="fw-bold">Filtrlar</span>
+                    </div>
+                    <form method="get">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Mahsulot holati</label>
+                            <select name="condition" class="form-select form-select-sm rounded-3">
+                                <option value="">Barchasi</option>
+                                <option value="NEW" {% if request.GET.condition == 'NEW' %}selected{% endif %}>Yangi</option>
+                                <option value="USED" {% if request.GET.condition == 'USED' %}selected{% endif %}>Ishlatilgan</option>
+                                <option value="REFURBISHED" {% if request.GET.condition == 'REFURBISHED' %}selected{% endif %}>Refurbished</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-glow w-100 btn-sm py-2">
+                            <i class="bi bi-check-lg me-1"></i> Qollash
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MAHSULOTLAR RO'YXATI -->
+        <div class="col-lg-9">
+            
+            <!-- Yuqori sarlavha paneli -->
+            <div class="glass-panel p-3 mb-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-white d-flex align-items-center">
+                    <span style="color: var(--accent-cyan);" class="me-2">●</span>
+                    {% if current_category %}{{ current_category.name }}{% else %}Barcha e'lonlar{% endif %}
+                </h5>
+                <span class="badge rounded-pill bg-light border border-secondary text-muted px-3 py-2">
+                    {% if page_obj %}{{ page_obj.paginator.count }}{% else %}{{ products|length }}{% endif %} ta natija
+                </span>
+            </div>
+
+            <!-- Mahsulotlar setkasi -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for product in products %}
+                    <div class="col">
+                        <div class="product-card h-100 d-flex flex-column">
+                            
+                            <!-- Rasm va Belgilar -->
+                            <div class="product-img-wrapper">
+                                {% if product.images.first %}
+                                    <img src="{{ product.images.first.image.url }}" alt="{{ product.title }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x200/1e293b/ffffff?text=Rasm+Mavjud+Emas" alt="No image">
+                                {% endif %}
+                                
+                                <span class="badge-status">
+                                    {{ product.get_condition_display }}
+                                </span>
+
+                                <button class="btn-fav">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+
+                            <!-- Kontent -->
+                            <div class="p-3 d-flex flex-column flex-grow-1">
+                                <a href="{% url 'products:product_detail' product.slug %}" class="product-title mb-2">
+                                    {{ product.title }}
+                                </a>
+
+                                <div class="d-flex align-items-center mb-3 small" style="color: var(--accent-cyan);">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>
+                                    <span class="fw-bold text-white me-1">5.0</span>
+                                    <span class="text-muted">(12 sharh)</span>
+                                </div>
+
+                                <div class="mt-auto pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="price-text">{{ product.price|intcomma }} <small class="fs-6 text-muted">so'm</small></div>
+                                    </div>
+                                    <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-outline-light btn-sm rounded-circle px-2">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                </div>
+
+                                <!-- Egasi uchun boshqaruv -->
+                                {% if request.user == product.seller %}
+                                    <div class="d-flex gap-2 mt-3 pt-2 border-top border-secondary border-opacity-25">
+                                        <a href="{% url 'products:product_update' product.slug %}" class="btn btn-sm btn-outline-warning w-50 py-1" style="font-size:0.75rem;">
+                                            Tahrirlash
+                                        </a>
+                                        <a href="{% url 'products:product_delete' product.slug %}" class="btn btn-sm btn-outline-danger w-50 py-1" style="font-size:0.75rem;">
+                                            O'chirish
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 w-100 text-center py-5 glass-panel">
+                        <i class="bi bi-inbox text-muted display-4 mb-3 d-block"></i>
+                        <h6 class="text-muted">Hali hech qanday e'lon mavjud emas.</h6>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- SAHIFALASH (PAGINATION) BLOKI -->
+            {% if is_paginated or page_obj.has_other_pages %}
+                <div class="d-flex justify-content-center mt-5">
+                    <nav aria-label="Mahsulotlar sahifalari">
+                        <ul class="pagination custom-pagination mb-0">
+                            
+                            <!-- Oldingi sahifa tugmasi -->
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        <i class="bi bi-chevron-left me-1"></i> Oldingi
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-left me-1"></i> Oldingi</span>
+                                </li>
+                            {% endif %}
+
+                            <!-- Sahifa raqamlari -->
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active" aria-current="page">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Keyingi sahifa tugmasi -->
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        Keyingi <i class="bi bi-chevron-right ms-1"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Keyingi <i class="bi bi-chevron-right ms-1"></i></span>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

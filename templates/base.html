@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bozorix — Zamonaviy Marketplace{% endblock %}</title>
+
+    <!-- Bootstrap 5.3 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-primary: #6366f1;
+            --brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --brand-glow: rgba(99, 102, 241, 0.3);
+            --bg-dark: #090d16;
+            --surface-glass: rgba(18, 26, 43, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --radius-main: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(217, 70, 239, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .main-wrapper { flex: 1; }
+
+        /* HEADER & NAVBAR */
+        .site-header {
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glass);
+            z-index: 1030;
+        }
+
+        .brand-logo {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* SEARCH BOX */
+        .search-box .input-group {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-main);
+            padding: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box .input-group:focus-within {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 20px var(--brand-glow);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-box .form-control {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            padding: 0.6rem 1.2rem;
+            box-shadow: none;
+        }
+
+        .search-box .form-control::placeholder {
+            color: var(--text-sub);
+        }
+
+        .search-box .btn-search {
+            background: var(--brand-gradient);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 0.55rem 1.4rem;
+            font-weight: 600;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .search-box .btn-search:hover {
+            opacity: 0.9;
+            color: #ffffff;
+        }
+
+        /* NAV ICONS */
+        .nav-icon-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.5rem 0.8rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-icon-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-color: var(--brand-primary);
+            transform: translateY(-2px);
+        }
+
+        .badge-cart {
+            font-size: 0.7rem;
+            padding: 3px 7px;
+            border-radius: 20px;
+            background: #ef4444 !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        /* DROPDOWN */
+        .user-dropdown .dropdown-toggle::after { display: none; }
+
+        .dropdown-menu {
+            background: rgba(18, 26, 43, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-main);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            padding: 8px;
+        }
+
+        .dropdown-item {
+            color: var(--text-main);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .btn-create-post {
+            background: var(--brand-gradient);
+            border: none;
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 0 15px var(--brand-glow);
+            transition: all 0.3s ease;
+        }
+
+        .btn-create-post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--brand-glow);
+            color: #ffffff;
+        }
+
+        /* MESSAGES & ALERTS */
+        .alert-custom {
+            background: var(--surface-glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-radius: var(--radius-main);
+        }
+
+        /* FOOTER */
+        .site-footer {
+            background: rgba(9, 13, 22, 0.95);
+            border-top: 1px solid var(--border-glass);
+            color: var(--text-sub);
+            font-size: 0.875rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="site-header sticky-top py-2">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                
+                <a class="brand-logo" href="{% url 'products:product_list' %}">
+                    <i class="bi bi-bag-heart-fill"></i>bozorix
+                </a>
+
+                <!-- Qidiruv -->
+                <form class="search-box d-none d-md-flex flex-grow-1 mx-3" action="{% url 'products:product_list' %}" method="get" style="max-width: 550px;">
+                    <div class="input-group">
+                        <input type="search" name="q" class="form-control" placeholder="Mahsulotlar bo'yicha qidiruv..." value="{{ request.GET.q }}">
+                        <button class="btn btn-search" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+
+                <!-- Onlayn do'kon o'ng paneli -->
+                <div class="d-flex align-items-center gap-2">
+                    
+                    <!-- SAVAT BO'LIMI -->
+                    <a href="{% url 'products:cart_detail' %}" class="nav-icon-link d-flex align-items-center gap-2">
+                        <i class="bi bi-bag fs-5 text-info"></i>
+                        <span class="d-none d-lg-inline">Savat</span>
+                        {% if cart_count %}
+                            <span class="badge badge-cart">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    {% if user.is_authenticated %}
+                        <!-- CHAT BO'LIMI -->
+                        <a href="{% url 'chat:dialog_list' %}" class="nav-icon-link d-flex align-items-center gap-2">
+                            <i class="bi bi-chat-dots fs-5 text-warning"></i>
+                            <span class="d-none d-lg-inline">Suhbatlar</span>
+                        </a>
+
+                        <!-- PROFIL DROPDOWN -->
+                        <div class="dropdown user-dropdown">
+                            <a href="#" class="nav-icon-link d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown">
+                                {% if user.avatar %}
+                                    <img src="{{ user.avatar.url }}" class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+                                {% else %}
+                                    <i class="bi bi-person-circle fs-5 style="color: var(--brand-primary)"></i>
+                                {% endif %}
+                                <span class="fw-semibold">{{ user.username }}</span>
+                            </a>
+                            
+                            <ul class="dropdown-menu dropdown-menu-end mt-2">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'accounts:profile' %}">
+                                        <i class="bi bi-person text-info fs-5"></i> Profilim
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary my-1"></li>
+                                <li>
+                                    <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger w-100">
+                                            <i class="bi bi-box-arrow-right fs-5"></i> Chiqish
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-sm fw-semibold me-1 rounded-3 px-3">Kirish</a>
+                    {% endif %}
+
+                    <!-- E'LON BERISH -->
+                    <a href="{% url 'products:product_create' %}" class="btn btn-create-post btn-sm d-flex align-items-center gap-1">
+                        <i class="bi bi-plus-lg fs-6"></i> E'lon berish
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-wrapper py-4">
+        <div class="container">
+            
+            {% if messages %}
+                <div class="messages-wrapper mb-4">
+                    {% for message in messages %}
+                        <div class="alert alert-custom alert-dismissible fade show shadow-lg d-flex align-items-center gap-2" role="alert">
+                            {% if message.tags == 'success' %}
+                                <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+                            {% else %}
+                                <i class="bi bi-info-circle-fill fs-5 text-info"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer py-4 mt-auto">
+        <div class="container text-center">
+            <p class="m-0">&copy; {% now "Y" %} Bozorix. Barcha huquqlar himoyalangan.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
